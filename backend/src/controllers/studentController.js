@@ -54,7 +54,6 @@ router.get('/:studentID', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const studentCreate = await Student.create(req.body);
-
     return res.status(201).send({ studentCreate });
   } catch (err) {
     if (err.code === 11000) {
