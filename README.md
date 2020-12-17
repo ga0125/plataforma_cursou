@@ -1,4 +1,4 @@
-# Repo Organizer
+# Biologia Total - Painel Administrativo
 Administration console to help a online study platform manage students, courses and enrollments. 
 
 ***
