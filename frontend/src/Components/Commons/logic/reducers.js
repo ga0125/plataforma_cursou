@@ -28,6 +28,15 @@ export default function FeedbackReducers(state = { open: false, type: 'info', me
       return {
         ...state, open: true, type: 'error', message: lang.serverError,
       };
+    case 'REGISTER_ENROLLMENT_ERROR':
+      if (action.error === 409) {
+        return {
+          ...state, open: true, type: 'error', message: lang.enrollmentAlreadyRegistered,
+        };
+      }
+      return {
+        ...state, open: true, type: 'error', message: lang.serverError,
+      };
     default:
       return state;
   }

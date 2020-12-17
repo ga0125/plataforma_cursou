@@ -7,7 +7,7 @@
 
 // -----------------------------
 // Import external libraries
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 
@@ -39,11 +39,14 @@ import VerticalSplitRoundedIcon from '@material-ui/icons/VerticalSplitRounded';
 import VerticalSplitOutlinedIcon from '@material-ui/icons/VerticalSplitOutlined';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import Box from '@material-ui/core/Box';
+import { useDispatch } from 'react-redux';
 import FeedbackScreen from '../../Commons/interface/Feedback.component';
 import MenuRoute from '../../../routes/MenuRoute';
 import lang from '../../../locales/ptBR';
 import Logo from '../../../assets/images/biologia_total_logo.png';
 import mainStyle from './styles';
+import { retrieveStudentRequest } from '../../Student/logic/actions';
+import { retrieveCourseRequest } from '../../Course/logic/actions';
 
 export default function Main() {
   // -----------------------------
@@ -51,7 +54,7 @@ export default function Main() {
   const classes = mainStyle();
   const theme = useTheme();
   const history = useHistory();
-
+  const dispatch = useDispatch();
   // -----------------------------
   // Initialize internal states
   const [openSideBar, setOpenSidebar] = useState(true);
@@ -63,6 +66,13 @@ export default function Main() {
     setMenuSelect({ ...menuSelect, value });
     history.push(`/home/${value}/`);
   };
+
+  // -----------------------------
+  // Onload trigger
+  useEffect(() => {
+    dispatch(retrieveStudentRequest());
+    dispatch(retrieveCourseRequest());
+  }, []);
 
   return (
     <div className={classes.root}>

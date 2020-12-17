@@ -7,6 +7,26 @@
 
 // -----------------------------
 // Declaring register actions
+export function retrieveStudentRequest() {
+  return {
+    type: 'RETRIEVE_STUDENT_REQUEST',
+  };
+}
+
+export function retrieveStudentSuccess(response) {
+  return {
+    type: 'RETRIEVE_STUDENT_SUCCESS',
+    response,
+  };
+}
+
+export function retrieveStudentError(error) {
+  return {
+    type: 'RETRIEVE_STUDENT_ERROR',
+    error,
+  };
+}
+
 export function registerStudentRequest(data) {
   return {
     type: 'REGISTER_STUDENT_REQUEST',

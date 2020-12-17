@@ -11,6 +11,7 @@ const lang = {
   homePage: 'Home',
   cancelButton: 'Voltar ao Painel',
   serverError: 'Ocorreu um erro no servidor, tente novamente.',
+  noRegister: 'Nenhum cadastrado na base de dados',
 
   // -----------------------------
   // Main page
@@ -44,6 +45,8 @@ const lang = {
   // Enrollment page
   registerEnrollmentTitle: 'Cadastro de Matrícula',
   registerEnrollmentButton: 'Registrar Matrícula',
+  selectCourse: 'Selecione pelo menos um curso para matrícula',
+  enrollmentAlreadyRegistered: 'Aluno já matriculado em um dos cursos selecionados',
 };
 
 export default lang;

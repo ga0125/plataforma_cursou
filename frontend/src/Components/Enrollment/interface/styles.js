@@ -49,7 +49,8 @@ const EnrollmentStyle = makeStyles((theme) => ({
     width: '100%',
   },
   input: {
-    margin: 10,
+    marginTop: 5,
+    marginBottom: 10,
   },
   dateInput: {
     width: '50%',
@@ -84,6 +85,21 @@ const EnrollmentStyle = makeStyles((theme) => ({
   actionRegisterButtons: {
     marginLeft: 83,
     height: 83,
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: '50%',
+    width: '100%',
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
+  noLabel: {
+    marginTop: 20,
   },
 }));
 

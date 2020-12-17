@@ -10,10 +10,10 @@ import apiInstance from '../../../drivers/api.server';
 import { registerEnrollmentSuccess, registerEnrollmentError } from './actions';
 
 // -----------------------------
-// Create Main middleware
+// Create Enrollment middleware
 function* RegisterEnrollmentMiddleware({ data }) {
   try {
-    const response = yield apiInstance.post(`${process.env.REACT_APP_API_VERSION_ROUTE}/courses`, data);
+    const response = yield apiInstance.post(`${process.env.REACT_APP_API_VERSION_ROUTE}/enrollments`, data);
 
     yield put(registerEnrollmentSuccess(response.data));
   } catch (error) {

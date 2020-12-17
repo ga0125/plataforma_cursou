@@ -7,10 +7,15 @@
 
 import { put, all, takeLatest } from 'redux-saga/effects';
 import apiInstance from '../../../drivers/api.server';
-import { registerStudentSuccess, registerStudentError } from './actions';
+import {
+  registerStudentSuccess,
+  registerStudentError,
+  retrieveStudentSuccess,
+  retrieveStudentError,
+} from './actions';
 
 // -----------------------------
-// Create Main middleware
+// Create Student middleware
 function* RegisterStudentMiddleware({ data }) {
   try {
     const response = yield apiInstance.post(`${process.env.REACT_APP_API_VERSION_ROUTE}/student`, data);
@@ -21,8 +26,19 @@ function* RegisterStudentMiddleware({ data }) {
   }
 }
 
+function* RetrieveStudentMiddleware() {
+  try {
+    const response = yield apiInstance.get(`${process.env.REACT_APP_API_VERSION_ROUTE}/student`);
+
+    yield put(retrieveStudentSuccess(response.data));
+  } catch (error) {
+    yield put(retrieveStudentError(error.response.status));
+  }
+}
+
 // -----------------------------
 // Joining middleware with their respectives actions
 export default all([
   takeLatest('REGISTER_STUDENT_REQUEST', RegisterStudentMiddleware),
+  takeLatest('RETRIEVE_STUDENT_REQUEST', RetrieveStudentMiddleware),
 ]);

@@ -7,6 +7,26 @@
 
 // -----------------------------
 // Declaring register actions
+export function retrieveCourseRequest() {
+  return {
+    type: 'RETRIEVE_COURSE_REQUEST',
+  };
+}
+
+export function retrieveCourseSuccess(response) {
+  return {
+    type: 'RETRIEVE_COURSE_SUCCESS',
+    response,
+  };
+}
+
+export function retrieveCourseError(error) {
+  return {
+    type: 'RETRIEVE_COURSE_ERROR',
+    error,
+  };
+}
+
 export function registerCourseRequest(data) {
   return {
     type: 'REGISTER_COURSE_REQUEST',

@@ -9,25 +9,40 @@
 // Import external libraries
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTheme } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
-import { Typography } from '@material-ui/core';
+import { Typography, Autocomplete } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import Chip from '@material-ui/core/Chip';
+import InputLabel from '@material-ui/core/InputLabel';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import MenuBookOutlinedIcon from '@material-ui/icons/MenuBookOutlined';
 import Button from '@material-ui/core/Button';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Input from '@material-ui/core/Input';
 import SuccessfulRegistration from '../../Commons/interface/SuccessfulRegistration.component';
 import EnrollmentStyle from './styles';
 import lang from '../../../locales/ptBR';
-import { validateCourseName } from '../../../drivers/validators';
-import { registerEnrollmentRequest, registerEnrollmentResetValue } from '../logic/actions';
+import { registerEnrollmentResetValue, registerEnrollmentRequest } from '../logic/actions';
+
+function getStyles(course, courseList, theme) {
+  return {
+    fontWeight:
+      courseList.indexOf(course) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
 
 export default function Enrollment() {
   // -----------------------------
@@ -35,20 +50,29 @@ export default function Enrollment() {
   const classes = EnrollmentStyle();
   const history = useHistory();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const feedbackStore = useSelector((state) => state.FeedbackReducers);
+  const enrollmentStore = useSelector((state) => state.EnrollmentReducers);
+  const studentStore = useSelector((state) => state.StudentReducers);
   const courseStore = useSelector((state) => state.CourseReducers);
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
 
   // -----------------------------
   // Initialize internal states
-  const [courseTitle, setCourseTitle] = useState({
-    value: '',
-    isInvalid: false,
-  });
-  const [courseDescription, setCourseDescription] = useState({
-    value: '',
-    isInvalid: false,
-  });
   const [loadFeedback, setLoadFeedback] = useState(false);
+  // const [studentSelected] = useState();
+  const [courseList, setCourseList] = React.useState([]);
+  const [courses, setCourseID] = React.useState([]);
+  const [studentID, setStudendID] = React.useState([]);
 
   // -----------------------------
   // Feedback Store watcher
@@ -57,27 +81,30 @@ export default function Enrollment() {
   }, [feedbackStore]);
 
   // -----------------------------
+  // Save the selected student ID on its state
+  const handleStudentSelection = (student) => {
+    setStudendID(student._id);
+    return student.email;
+  };
+
+  // -----------------------------
   // Verify course data and register weather its correct
   const handleSubmit = () => {
-    const checkCourseTitle = validateCourseName(courseTitle.value);
-
-    // Setting up states field errors according the rules above
-    !checkCourseTitle && setCourseTitle({ ...courseTitle, isInvalid: true });
-
-    // Starting loading when we're sending a request
-    setLoadFeedback(true);
-
-    // Dispatching user's data to request action
-    if (checkCourseTitle) {
+    if (studentID && courses) {
       const data = {
-        title: courseTitle.value,
-        description: courseDescription.value,
+        student: studentID,
+        courses,
       };
-
       dispatch(registerEnrollmentRequest(data));
-    } else {
-      setLoadFeedback(false);
     }
+  };
+
+  // -----------------------------
+  // Save the selected courses ID on its state
+  const handleCourseSelect = (event) => {
+    const inputValue = event.target.value;
+    setCourseList(inputValue);
+    inputValue.map((course) => setCourseID([...courses, { _id: course._id }]));
   };
 
   // -----------------------------
@@ -110,7 +137,7 @@ export default function Enrollment() {
             justify="center"
             alignItems="center"
           >
-            {courseStore.registered
+            {enrollmentStore.registered
               ? (
                 <>
                   <Grid item xs={12}>
@@ -159,41 +186,59 @@ export default function Enrollment() {
                   <Grid item xs={9}>
                     <form className={classes.form}>
 
-                      {/* Course Title Field */}
-                      <TextField
-                        fullWidth
-                        className={classes.input}
-                        onBlur={(event) => setCourseTitle({
-                          ...courseTitle, value: event.target.value,
-                        })}
-                        onChange={() => setCourseTitle({ ...courseTitle, isInvalid: false })}
-                        error={courseTitle.isInvalid}
-                        id="name-input"
-                        label={lang.courseTitle}
-                        type="name"
-                        autoComplete="name"
-                        variant="standard"
-                        required
+                      {/* Student Search Field */}
+                      <Autocomplete
+                        freeSolo
+                        id="student_search_list"
+                        disableClearable
+                        getOptionLabel={handleStudentSelection}
+                        options={studentStore.data ? studentStore.data.map((student) => student) : ['Nenhum cadastro']}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            label="Selecione o estudante"
+                            margin="normal"
+                            variant="standard"
+                            className={classes.input}
+                            InputProps={{ ...params.InputProps, type: 'search' }}
+                            required
+                          />
+                        )}
                       />
 
-                      {/* Course Description Field */}
-                      <TextField
-                        fullWidth
-                        multiline
-                        placeholder="Descreva este curso detalhadamente."
-                        className={classes.input}
-                        onBlur={(event) => setCourseDescription({
-                          ...courseDescription, value: event.target.value,
-                        })}
-                        onChange={() => setCourseDescription({ ...courseDescription, isInvalid: false })}
-                        error={courseDescription.isInvalid}
-                        id="course-description"
-                        label={lang.courseDescription}
-                        name="course-description"
-                        type="description"
-                        autoComplete="description"
-                        variant="standard"
-                      />
+                      {/* Course Search Field */}
+                      <FormControl className={classes.form}>
+                        <InputLabel id="course-search-list-label">{lang.selectCourse}</InputLabel>
+                        <Select
+                          labelId="course-search-list-label"
+                          id="course-search-list"
+                          multiple
+                          value={courseList}
+                          onChange={handleCourseSelect}
+                          input={(
+                            <Input
+                              id="course-search-input"
+                              className={classes.input}
+                            />
+                          )}
+                          renderValue={(selected) => (
+                            <div className={classes.chips}>
+                              {selected.map((value) => (
+                                <Chip key={value._id} label={value.title} className={classes.chip} />
+                              ))}
+                            </div>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {courseStore.data ? courseStore.data.map((course) => (
+                            <MenuItem key={course.title} value={course} style={getStyles(course, courseList, theme)}>
+                              {course.title}
+                            </MenuItem>
+                          )) : 'Nenhum cadastro'}
+                        </Select>
+                      </FormControl>
+
                     </form>
                   </Grid>
 
